@@ -43,7 +43,9 @@ import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,11 +54,9 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.effect.Effect;
@@ -99,10 +99,15 @@ public class DigitalClock extends Application
     private HttpServer server;
     
     private final int httpPort = 8080;
+
+//TODO: make this not static !!!!!!!!!!!!!!!!!!!!!    
+    private static List<Circle> dots;
     
     @Override
     public void init()
     {
+        dots = new ArrayList();
+        
         initializeParameters();
 
         initializeServer();
@@ -196,14 +201,14 @@ public class DigitalClock extends Application
     @Override
     public void stop()
     {
+        clock.shutDown();
+        
         System.out.println("stopping server");
-
-        Platform.exit();        
         
         server.stop(httpPort);
         
-        System.out.println("server stopped");
-        
+        System.out.println("server stopped");  
+
         Platform.exit();
     }
 
@@ -213,9 +218,10 @@ public class DigitalClock extends Application
     public class Clock extends Parent 
     {
         private Calendar calendar = Calendar.getInstance();
+        
         private Digit[] digits;
+        
         private Timeline delayTimeline, secondTimeline;
-        private Group dots;
 
         public Clock(Color onColor, Color offColor) 
         {
@@ -236,16 +242,31 @@ public class DigitalClock extends Application
                 digits[i] = digit;
                 getChildren().add(digit);
             }
+            
+            Circle c1 = new Circle(80 + 54 + 20, 44, 6, onColor);
+            Circle c2 = new Circle(80 + 54 + 17, 64, 6, onColor);
+            Circle c3 = new Circle((80 * 3) + 54 + 20, 44, 6, onColor);
+            Circle c4 = new Circle((80 * 3) + 54 + 17, 64, 6, onColor);
+ 
+            dots.add(c1);
+            dots.add(c2);
+            dots.add(c3);
+            dots.add(c4);
+            
             // create dots
-            dots = new Group(
-                    new Circle(80 + 54 + 20, 44, 6, onColor),
-                    new Circle(80 + 54 + 17, 64, 6, onColor),
-                    new Circle((80 * 3) + 54 + 20, 44, 6, onColor),
-                    new Circle((80 * 3) + 54 + 17, 64, 6, onColor));
-            dots.setEffect(onDotEffect);
-            getChildren().add(dots);
-            // update digits to current time and start timer to update every second
+            Group dotsGroup = new Group(c1,
+                                        c2,
+                                        c3,
+                                        c4);
+            
+            dotsGroup.setEffect(onDotEffect);
+            
+            getChildren().add(dotsGroup);
+            
+            // update digits to current time
             refreshClocks();
+            
+            // start timer to update every second
             play();
         }
 
@@ -308,13 +329,16 @@ public class DigitalClock extends Application
                 }
             }
 
-            ObservableList<Node> dotsChildren = dots.getChildren();
-            for(Node circle : dotsChildren)
-            {
-                Circle c = (Circle) circle;
-                
-                c.setFill(newColor);
-            }
+//            for(Circle circle : dots)
+//            {                
+//                circle.setFill(newColor);
+//            }
+        }
+        
+        public void shutDown()
+        {
+            delayTimeline.stop();
+            secondTimeline.stop();
         }
         
         public void stop()
@@ -369,6 +393,7 @@ public class DigitalClock extends Application
             this.offColor = offColor;
             this.onEffect = onEffect;
             this.offEffect = offEffect;
+            
             getChildren().addAll(polygons);
             getTransforms().add(new Shear(-0.1,0));
             showNumber(0);
@@ -381,6 +406,11 @@ public class DigitalClock extends Application
 
         public void showNumber(Integer num) 
         {
+            for(Circle circle : dots)
+            {                
+                circle.setFill(onColor);
+            }            
+            
             if (num < 0 || num > 9) num = 0; // default to 0 for non-valid numbers
             
             for (int i = 0; i < 7; i++) 
