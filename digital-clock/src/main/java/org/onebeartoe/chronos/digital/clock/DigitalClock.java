@@ -91,7 +91,7 @@ public class DigitalClock extends Application
     
     private HttpServer server;
     
-    private int httpPort = 8080;
+    private final int httpPort = 8080;
     
     @Override
     public void init()
@@ -148,22 +148,29 @@ public class DigitalClock extends Application
         primaryStage.show();
     }
     
+    @Override
+    public void stop()
+    {
+        server.stop(httpPort);
+    }
+    
     private void startServer() //throws IOException
     {
         InetSocketAddress anyhost = new InetSocketAddress(httpPort);
         try
         {
             server = HttpServer.create(anyhost, 0);
-            HttpHandler webContentHttpHandler = new WebContentHttpHandler()
+            
+            HttpHandler webContentHttpHandler = new WebContentHttpHandler();
 
-            server.            
+            server.createContext("/", webContentHttpHandler);
+            
+            server.start();
         }
         catch (IOException ex)
         {
             Logger.getLogger(DigitalClock.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-
     }
 
     /**
