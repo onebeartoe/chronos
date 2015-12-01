@@ -40,15 +40,18 @@ package org.onebeartoe.chronos.digital.clock;
 
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Calendar;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -66,6 +69,8 @@ import javafx.scene.transform.Scale;
 import javafx.scene.transform.Shear;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
+import org.onebeartoe.chronos.digital.clock.network.ChangeColorHttpHandler;
 import org.onebeartoe.chronos.digital.clock.network.WebContentHttpHandler;
 
 /**
@@ -98,7 +103,7 @@ public class DigitalClock extends Application
     {
         initializeParameters();
 
-        startServer();
+        initializeServer();
     }
     
     private void initializeParameters()
@@ -152,12 +157,17 @@ public class DigitalClock extends Application
     public void stop()
     {
         System.out.println("stopping server");
-        //logger.log(Level.INFO, "stopping server");
+
+        Platform.exit();        
         
         server.stop(httpPort);
+        
+        System.out.println("server stopped");
+        
+        Platform.exit();
     }
     
-    private void startServer() //throws IOException
+    private void initializeServer() //throws IOException
     {
         InetSocketAddress anyhost = new InetSocketAddress(httpPort);
         try
@@ -165,8 +175,10 @@ public class DigitalClock extends Application
             server = HttpServer.create(anyhost, 0);
             
             HttpHandler webContentHttpHandler = new WebContentHttpHandler();
+            HttpHandler changeColorHttpHandler = new ChangeColorHttpHandler();
 
             server.createContext("/", webContentHttpHandler);
+            server.createContext("/color", changeColorHttpHandler);
             
             server.start();
         }

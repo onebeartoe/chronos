@@ -40,7 +40,7 @@ public class WebContentHttpHandler extends DynamicFileHttpHandler
         TextReplacement colorDropdownReplacer = (key, original) -> 
         {
             String replacementText = colorsDropdown();
-            String mapping = original.replaceAll(key, "BlueGreen");
+            String mapping = original.replaceAll(key, replacementText);
             
             return mapping;
         };
@@ -70,6 +70,8 @@ public class WebContentHttpHandler extends DynamicFileHttpHandler
                 
         // API - http://www.johnquinn.com/doc/ecs/index.html
         Select dropdown = new Select(listName, colorArray);
+        
+        dropdown.setOnChange("colorChanged(this.value);");
         
         return dropdown.toString();
     }
