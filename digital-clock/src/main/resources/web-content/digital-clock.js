@@ -1,1 +1,5 @@
 
+function loadBuiltInColors()
+{
+    alert("hi");
+}

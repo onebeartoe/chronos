@@ -5,8 +5,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+import javafx.scene.paint.Color;
+
+import org.apache.ecs.html.Select;
+import org.onebeartoe.application.Colors;
+
 import org.onebeartoe.io.TextFileReader;
 import org.onebeartoe.io.TextFileWriter;
 import org.onebeartoe.network.http.file.transfer.DynamicFileHttpHandler;
@@ -30,6 +36,18 @@ public class WebContentHttpHandler extends DynamicFileHttpHandler
         
         textFileWriter = new TextFileWriter();
         
+        // this lambda inserts a drowpdown with the build-in list of JavaFX colors
+        TextReplacement colorDropdownReplacer = (key, original) -> 
+        {
+            String replacementText = colorsDropdown();
+            String mapping = original.replaceAll(key, "BlueGreen");
+            
+            return mapping;
+        };
+                
+        String key = "REPLACE_ME_TEXT";
+        addTextReplacer(key, colorDropdownReplacer);
+        
         buildClasspaths();
         
         extractWebContent();
@@ -42,16 +60,40 @@ public class WebContentHttpHandler extends DynamicFileHttpHandler
         webContentClasspaths.add(subpath + "index.html");
     }
     
+    private String colorsDropdown()
+    {
+        Map<String, Color> colorMap = Colors.list();
+        Set<String> keySet = colorMap.keySet();
+        String [] colorArray = keySet.toArray( new String[0] );
+        
+        String listName = "builtInColors";
+                
+        // API - http://www.johnquinn.com/doc/ecs/index.html
+        Select dropdown = new Select(listName, colorArray);
+        
+        return dropdown.toString();
+    }
+    /**
+     * This method extracts the file named in the classpath parameter, but does not create
+     * directories that it may have been under, in the JAR.
+     * @param classpath 
+     */
     private void extract(String classpath)
     {
         try
         {
             String text = textFileReader.readTextFromClasspath(classpath);
             
-            String outpath = getRootPath() + classpath;
+            int start = classpath.lastIndexOf("/");
+            start = start == -1 ? 0 : start; // slash was not found in the classpath parameter
+            String filename = classpath.substring(start);
+            
+            String outpath = getRootPath() + filename;
             File outfile = new File(outpath);
             
             outfile.getParentFile().mkdirs();
+            
+            logger.log(Level.INFO, "extracting: " + classpath);
             
             textFileWriter.writeText(outfile, text);
         }

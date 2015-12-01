@@ -151,6 +151,9 @@ public class DigitalClock extends Application
     @Override
     public void stop()
     {
+        System.out.println("stopping server");
+        //logger.log(Level.INFO, "stopping server");
+        
         server.stop(httpPort);
     }
     
@@ -234,26 +237,31 @@ public class DigitalClock extends Application
             digits[5].showNumber(seconds % 10);
         }
 
-        public void play() {
+        public void play() 
+        {
             // wait till start of next second then start a timeline to call refreshClocks() every second
             delayTimeline = new Timeline();
             delayTimeline.getKeyFrames().add(
-                    new KeyFrame(new Duration(1000 - (System.currentTimeMillis() % 1000)), new EventHandler<ActionEvent>() {
-                        @Override public void handle(ActionEvent event) {
-                            if (secondTimeline != null) {
-                                secondTimeline.stop();
-                            }
-                            secondTimeline = new Timeline();
-                            secondTimeline.setCycleCount(Timeline.INDEFINITE);
-                            secondTimeline.getKeyFrames().add(
-                                    new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
-                                        @Override public void handle(ActionEvent event) {
-                                            refreshClocks();
-                                        }
-                                    }));
-                            secondTimeline.play();
+                new KeyFrame(new Duration(1000 - (System.currentTimeMillis() % 1000)), new EventHandler<ActionEvent>() 
+                {
+                    @Override public void handle(ActionEvent event) 
+                    {
+                        if (secondTimeline != null) {
+                            secondTimeline.stop();
                         }
-                    })
+                        secondTimeline = new Timeline();
+                        secondTimeline.setCycleCount(Timeline.INDEFINITE);
+                        secondTimeline.getKeyFrames().add(
+                                new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() 
+                                {
+                                    @Override public void handle(ActionEvent event) 
+                                    {
+                                        refreshClocks();
+                                    }
+                                }));
+                        secondTimeline.play();
+                    }
+                })
             );
             delayTimeline.play();
         }
@@ -273,7 +281,8 @@ public class DigitalClock extends Application
      */
     public static final class Digit extends Parent 
     {
-        private static final boolean[][] DIGIT_COMBINATIONS = new boolean[][]{
+        private static final boolean[][] DIGIT_COMBINATIONS = new boolean[][]
+        {
                 new boolean[]{true, false, true, true, true, true, true},
                 new boolean[]{false, false, false, false, true, false, true},
                 new boolean[]{true, true, true, false, true, true, false},
@@ -283,16 +292,21 @@ public class DigitalClock extends Application
                 new boolean[]{true, true, true, true, false, true, true},
                 new boolean[]{true, false, false, false, true, false, true},
                 new boolean[]{true, true, true, true, true, true, true},
-                new boolean[]{true, true, true, true, true, false, true}};
-        private final Polygon[] polygons = new Polygon[]{
+                new boolean[]{true, true, true, true, true, false, true}
+        };
+        
+        private final Polygon[] polygons = new Polygon[]
+        {
                 new Polygon(2, 0, 52, 0, 42, 10, 12, 10),
                 new Polygon(12, 49, 42, 49, 52, 54, 42, 59, 12f, 59f, 2f, 54f),
                 new Polygon(12, 98, 42, 98, 52, 108, 2, 108),
                 new Polygon(0, 2, 10, 12, 10, 47, 0, 52),
                 new Polygon(44, 12, 54, 2, 54, 52, 44, 47),
                 new Polygon(0, 56, 10, 61, 10, 96, 0, 106),
-                new Polygon(44, 61, 54, 56, 54, 106, 44, 96)};
-        private final Color onColor;
+                new Polygon(44, 61, 54, 56, 54, 106, 44, 96)
+        };
+        
+        private Color onColor;
         private final Color offColor;
         private final Effect onEffect;
         private final Effect offEffect;
@@ -307,11 +321,18 @@ public class DigitalClock extends Application
             getTransforms().add(new Shear(-0.1,0));
             showNumber(0);
         }
+        
+        public void setOnColor(Color color)
+        {
+            onColor = color;
+        }
 
         public void showNumber(Integer num) 
         {
             if (num < 0 || num > 9) num = 0; // default to 0 for non-valid numbers
-            for (int i = 0; i < 7; i++) {
+            
+            for (int i = 0; i < 7; i++) 
+            {
                 polygons[i].setFill(DIGIT_COMBINATIONS[num][i] ? onColor : offColor);
                 polygons[i].setEffect(DIGIT_COMBINATIONS[num][i] ? onEffect : offEffect);
             }
