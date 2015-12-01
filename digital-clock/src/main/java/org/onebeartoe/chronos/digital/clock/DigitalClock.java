@@ -52,9 +52,11 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.effect.Effect;
@@ -133,6 +135,44 @@ public class DigitalClock extends Application
             hourOffset = Integer.valueOf(s);
         }
     }
+
+    private void initializeServer() //throws IOException
+    {
+        InetSocketAddress anyhost = new InetSocketAddress(httpPort);
+        try
+        {
+            server = HttpServer.create(anyhost, 0);
+            
+            HttpHandler webContentHttpHandler = new WebContentHttpHandler();
+            HttpHandler changeColorHttpHandler = new ChangeColorHttpHandler(this);
+
+            server.createContext("/", webContentHttpHandler);
+            server.createContext("/color", changeColorHttpHandler);
+            
+            server.start();
+        }
+        catch (IOException ex)
+        {
+            Logger.getLogger(DigitalClock.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }    
+    
+    /**
+     * The main() method is ignored in correctly deployed JavaFX 
+     * application. main() serves only as fallback in case the 
+     * application can not be launched through deployment artifacts,
+     * e.g., in IDEs with limited FX support. NetBeans ignores main().
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) 
+    {
+        launch(args);
+    }
+    
+    public void setOnColor(Color newColor)
+    {
+        clock.setOnColor(newColor);
+    }
     
     @Override
     public void start(Stage primaryStage) 
@@ -166,27 +206,6 @@ public class DigitalClock extends Application
         
         Platform.exit();
     }
-    
-    private void initializeServer() //throws IOException
-    {
-        InetSocketAddress anyhost = new InetSocketAddress(httpPort);
-        try
-        {
-            server = HttpServer.create(anyhost, 0);
-            
-            HttpHandler webContentHttpHandler = new WebContentHttpHandler();
-            HttpHandler changeColorHttpHandler = new ChangeColorHttpHandler();
-
-            server.createContext("/", webContentHttpHandler);
-            server.createContext("/color", changeColorHttpHandler);
-            
-            server.start();
-        }
-        catch (IOException ex)
-        {
-            Logger.getLogger(DigitalClock.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
 
     /**
      * Clock made of 6 of the Digit classes for hours, minutes and seconds.
@@ -196,6 +215,7 @@ public class DigitalClock extends Application
         private Calendar calendar = Calendar.getInstance();
         private Digit[] digits;
         private Timeline delayTimeline, secondTimeline;
+        private Group dots;
 
         public Clock(Color onColor, Color offColor) 
         {
@@ -217,7 +237,7 @@ public class DigitalClock extends Application
                 getChildren().add(digit);
             }
             // create dots
-            Group dots = new Group(
+            dots = new Group(
                     new Circle(80 + 54 + 20, 44, 6, onColor),
                     new Circle(80 + 54 + 17, 64, 6, onColor),
                     new Circle((80 * 3) + 54 + 20, 44, 6, onColor),
@@ -227,26 +247,6 @@ public class DigitalClock extends Application
             // update digits to current time and start timer to update every second
             refreshClocks();
             play();
-        }
-
-        private void refreshClocks() 
-        {
-//            calendar = Calendar.getInstance();          
-            calendar.setTimeInMillis(System.currentTimeMillis());
-            
-//            int hours = calendar.get(Calendar.HOUR_OF_DAY);
-            int hours = calendar.get(Calendar.HOUR);
-            
-            hours += DigitalClock.this.hourOffset;
-            
-            int minutes = calendar.get(Calendar.MINUTE);
-            int seconds = calendar.get(Calendar.SECOND);
-            digits[0].showNumber(hours / 10);
-            digits[1].showNumber(hours % 10);
-            digits[2].showNumber(minutes / 10);
-            digits[3].showNumber(minutes % 10);
-            digits[4].showNumber(seconds / 10);
-            digits[5].showNumber(seconds % 10);
         }
 
         public void play() 
@@ -276,11 +276,51 @@ public class DigitalClock extends Application
                 })
             );
             delayTimeline.play();
+        }        
+        
+        private void refreshClocks() 
+        {
+//            calendar = Calendar.getInstance();          
+            calendar.setTimeInMillis(System.currentTimeMillis());
+            
+//            int hours = calendar.get(Calendar.HOUR_OF_DAY);
+            int hours = calendar.get(Calendar.HOUR);
+            
+            hours += DigitalClock.this.hourOffset;
+            
+            int minutes = calendar.get(Calendar.MINUTE);
+            int seconds = calendar.get(Calendar.SECOND);
+            digits[0].showNumber(hours / 10);
+            digits[1].showNumber(hours % 10);
+            digits[2].showNumber(minutes / 10);
+            digits[3].showNumber(minutes % 10);
+            digits[4].showNumber(seconds / 10);
+            digits[5].showNumber(seconds % 10);
         }
 
+        public void setOnColor(Color newColor)
+        {
+            for(Digit d : digits)
+            {
+                if(d != null)
+                {
+                    d.setOnColor(newColor);
+                }
+            }
+
+            ObservableList<Node> dotsChildren = dots.getChildren();
+            for(Node circle : dotsChildren)
+            {
+                Circle c = (Circle) circle;
+                
+                c.setFill(newColor);
+            }
+        }
+        
         public void stop()
         {
             delayTimeline.stop();
+            
             if (secondTimeline != null) 
             {
                 secondTimeline.stop();
@@ -349,17 +389,5 @@ public class DigitalClock extends Application
                 polygons[i].setEffect(DIGIT_COMBINATIONS[num][i] ? onEffect : offEffect);
             }
         }
-    }
-
-    /**
-     * The main() method is ignored in correctly deployed JavaFX 
-     * application. main() serves only as fallback in case the 
-     * application can not be launched through deployment artifacts,
-     * e.g., in IDEs with limited FX support. NetBeans ignores main().
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) 
-    {
-        launch(args);
     }
 }

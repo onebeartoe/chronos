@@ -6,14 +6,21 @@ import com.sun.net.httpserver.HttpExchange;
 import java.net.URI;
 import javafx.scene.paint.Color;
 import org.onebeartoe.application.Colors;
+import org.onebeartoe.chronos.digital.clock.DigitalClock;
 import org.onebeartoe.network.TextHttpHandler;
-import static sun.text.normalizer.Utility.hex;
 
 /**
  * @author Roberto Marquez
  */
 public class ChangeColorHttpHandler extends TextHttpHandler
 {
+    private DigitalClock app;
+    
+    public ChangeColorHttpHandler(DigitalClock app)
+    {
+        this.app = app;
+    }
+    
     @Override
     protected String getHttpText(HttpExchange exchange)
     {
@@ -24,13 +31,8 @@ public class ChangeColorHttpHandler extends TextHttpHandler
 
         Color color = Colors.valueOf(colorName);
         
+        app.setOnColor(color);
 
-        
-        Pixel pixel = application.getPixel();
-        pixel.stopExistingTimer();
-        pixel.setScrollTextColor(color);
-        pixel.scrollText();
-        
-        return "scrolling text color update received:" + hex;
+        return "clock on color update received:" + colorName;
     }
 }

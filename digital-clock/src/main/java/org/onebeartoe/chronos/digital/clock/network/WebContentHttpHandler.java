@@ -58,6 +58,7 @@ public class WebContentHttpHandler extends DynamicFileHttpHandler
         webContentClasspaths = new ArrayList();                
         
         webContentClasspaths.add(subpath + "index.html");
+        webContentClasspaths.add(subpath + "digital-clock.js");
     }
     
     private String colorsDropdown()
@@ -119,7 +120,7 @@ public class WebContentHttpHandler extends DynamicFileHttpHandler
         else
         {
             webContentClasspaths.stream()
-                    .forEach( s -> extract(s) );
+                                .forEach( s -> extract(s) );
         }
     }
     
