@@ -4,10 +4,12 @@ package org.onebeartoe.chronos.digital.clock.network;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import javafx.scene.paint.Color;
 
 import org.apache.ecs.html.Select;
@@ -67,10 +69,16 @@ public class WebContentHttpHandler extends DynamicFileHttpHandler
         Set<String> keySet = colorMap.keySet();
         String [] colorArray = keySet.toArray( new String[0] );
         
+        List<String> sortedColorList = Arrays.stream(colorArray)
+                                        .sorted()
+                                        .collect( Collectors.toList() );
+        
+        String [] sortedColorArray = sortedColorList.toArray( new String[0] );
+        
         String listName = "builtInColors";
                 
         // API - http://www.johnquinn.com/doc/ecs/index.html
-        Select dropdown = new Select(listName, colorArray);
+        Select dropdown = new Select(listName, sortedColorArray);
         
         dropdown.setOnChange("colorChanged(this.value);");
         
