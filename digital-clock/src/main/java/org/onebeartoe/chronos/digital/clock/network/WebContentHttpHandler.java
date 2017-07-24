@@ -17,6 +17,7 @@ import org.onebeartoe.application.Colors;
 
 import org.onebeartoe.io.TextFileReader;
 import org.onebeartoe.io.TextFileWriter;
+import org.onebeartoe.io.buffered.BufferedTextFileReader;
 import org.onebeartoe.network.http.file.transfer.DynamicFileHttpHandler;
 
 /**
@@ -34,7 +35,7 @@ public class WebContentHttpHandler extends DynamicFileHttpHandler
     
     public WebContentHttpHandler()
     {
-        textFileReader = new TextFileReader();
+        textFileReader = new BufferedTextFileReader();
         
         textFileWriter = new TextFileWriter();
         
