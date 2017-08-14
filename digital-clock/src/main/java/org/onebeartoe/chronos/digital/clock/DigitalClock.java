@@ -42,6 +42,7 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -51,11 +52,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.animation.KeyFrame;
+import javafx.animation.PathTransition;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -66,6 +69,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.CubicCurveTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
 import javafx.scene.shape.Polygon;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Shear;
@@ -86,6 +92,8 @@ import org.onebeartoe.chronos.digital.clock.network.WebContentHttpHandler;
  */
 public class DigitalClock extends Application 
 {
+    private Group root;
+    
     private Clock clock;
     
     private Color onColor;
@@ -183,19 +191,87 @@ public class DigitalClock extends Application
     public void start(Stage primaryStage) 
     {
         primaryStage.setTitle("Digital Clock");
-        Group root = new Group();
-        Scene scene = new Scene(root, 480, 412);
-        // add background image
-        ImageView background = new ImageView(new Image(getClass().getResourceAsStream("DigitalClock-background.png")));
-        // add digital clock
+        root = new Group();
+        Scene scene = new Scene(root, 880, 812);
+        
+        // background image
+        InputStream instream = getClass().getResourceAsStream("DigitalClock-background.png");
+        Image image = new Image(instream);
+        ImageView background = new ImageView(image);
+        background.getTransforms().add(new Scale(1.5f, 1.5f, 0, 0));
+        
+        // digital clock
         clock = new Clock(onColor, Color.rgb(50,50,50));
         clock.setLayoutX(45);
         clock.setLayoutY(186);
         clock.getTransforms().add(new Scale(0.83f, 0.83f, 0, 0));
+        
         // add background and clock to sample
         root.getChildren().addAll(background, clock);
         primaryStage.setScene(scene);
         primaryStage.show();
+        
+//        startAnimation();
+    }
+    
+    public void startAnimation()
+    {
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(20),
+                new EventHandler<ActionEvent>() {
+
+        	double dx = 7; //Step on x or velocity
+        	double dy = 3; //Step on y
+                
+                Clock ball = clock;
+
+            @Override
+            public void handle(ActionEvent t) {
+            	//move the ball
+            	ball.setLayoutX(ball.getLayoutX() + dx);
+            	ball.setLayoutY(ball.getLayoutY() + dy);
+
+                Bounds bounds = root.getBoundsInLocal();
+
+                double ballWidth = ball.getBoundsInParent().getWidth();
+                double ballHeight = ball.getBoundsInParent().getHeight();
+                
+                //If the ball reaches the left or right border make the step negative
+                if(ball.getLayoutX() <= (bounds.getMinX() + ballWidth) 
+                   ||
+                   ball.getLayoutX() >= (bounds.getMaxX() - ballWidth) )
+                {
+                	dx = -dx;
+                }
+
+                //If the ball reaches the bottom or top border make the step negative
+                if((ball.getLayoutY() >= (bounds.getMaxY() - ballHeight)) 
+                    ||
+                    ball.getLayoutY() <= (bounds.getMinY() + ballHeight))
+                {
+
+                	dy = -dy;
+
+                }
+            }
+        }));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();        
+    }
+    
+    public void startAnimationWave()
+    {
+        Path path = new Path();
+        path.getElements().add(new MoveTo(20,20));
+        path.getElements().add(new CubicCurveTo(380, 0, 380, 120, 200, 120));
+        path.getElements().add(new CubicCurveTo(0, 120, 0, 240, 380, 240));
+        PathTransition pathTransition = new PathTransition();
+        pathTransition.setDuration(Duration.millis(4000));
+        pathTransition.setPath(path);
+        pathTransition.setNode(clock);
+        pathTransition.setOrientation(PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT);
+        pathTransition.setCycleCount(Timeline.INDEFINITE);
+        pathTransition.setAutoReverse(true);
+        pathTransition.play();
     }
     
     @Override
