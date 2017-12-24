@@ -27,7 +27,7 @@ public class WebContentHttpHandler extends DynamicFileHttpHandler
 {
     private List<String> webContentClasspaths;
     
-    private TextFileReader textFileReader;
+    private BufferedTextFileReader textFileReader;
     
     private TextFileWriter textFileWriter;
     
