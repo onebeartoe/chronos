@@ -16,6 +16,18 @@
         <module>digital-clock</module>
 		<module>timer</module>
     </modules>
+    
+    <repositories>
+        <repository>
+            <id>oss-snapshots-repo</id>
+            <name>Sonatype OSS Maven Repository</name>
+            <url>https://repository-onebeartoe.forge.cloudbees.com/snapshot/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>    
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
