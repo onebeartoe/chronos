@@ -1,5 +1,8 @@
 
 language: java
 
-
+addons:
+  sonarcloud:
+    organization: $SONAR_ORGANIZATION
+    token: $SONAR_TOKEN
 
