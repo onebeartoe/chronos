@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.scene.paint.Color;
 
@@ -33,6 +34,8 @@ public class WebContentHttpHandler extends DynamicFileHttpHandler
     
     private final String subpath = "/web-content/";
     
+    
+    
     public WebContentHttpHandler()
     {
         textFileReader = new BufferedTextFileReader();
@@ -42,7 +45,16 @@ public class WebContentHttpHandler extends DynamicFileHttpHandler
         // this lambda inserts a drowpdown with the build-in list of JavaFX colors
         TextReplacement colorDropdownReplacer = (key, original) -> 
         {
-            String replacementText = colorsDropdown();
+            String replacementText = "The colors replacment text is NOT set.";
+            try 
+            {
+                replacementText = colorsDropdown();
+            } 
+            catch (IllegalAccessException ex) 
+            {
+                logger.severe("An error occured retrieving colors: " + ex.getMessage() );
+            }
+            
             String mapping = original.replaceAll(key, replacementText);
             
             return mapping;
@@ -64,7 +76,7 @@ public class WebContentHttpHandler extends DynamicFileHttpHandler
         webContentClasspaths.add(subpath + "digital-clock.js");
     }
     
-    private String colorsDropdown()
+    private String colorsDropdown() throws IllegalAccessException
     {
         Map<String, Color> colorMap = Colors.list();
         Set<String> keySet = colorMap.keySet();
