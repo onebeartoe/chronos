@@ -21,8 +21,9 @@
 https://www.mkyong.com/javafx/javafx-animated-ball-example/
 -->
     <modules>
+        <module>bouncy-clock</module>
         <module>digital-clock</module>
-		<module>timer</module>
+        <module>timer</module>
     </modules>
     
     <repositories>
