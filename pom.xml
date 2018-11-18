@@ -10,7 +10,10 @@
 
     <packaging>pom</packaging>
 
-    <name>onebeartoe-chronos-parent</name>
+    <name>onebeartoe-chronos</name>
+
+https://stackoverflow.com/questions/20022889/how-to-make-the-ball-bounce-off-the-walls-in-javafx
+https://www.mkyong.com/javafx/javafx-animated-ball-example/
 
     <modules>
         <module>digital-clock</module>
