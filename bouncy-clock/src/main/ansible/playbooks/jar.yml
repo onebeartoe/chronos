@@ -2,6 +2,6 @@
 - hosts: all
   remote_user: pi
   serial: 1
-#  become: true
+  become: true
   roles:
     - ../roles/jar
