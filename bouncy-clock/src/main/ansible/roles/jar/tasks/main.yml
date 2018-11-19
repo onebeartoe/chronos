@@ -1,5 +1,5 @@
 
-#- name: Create the directory for the application binaries.
+- name: Create the directory for the application binaries.
   file: 
     path: "{{ optDirectory }}" 
     state: directory
