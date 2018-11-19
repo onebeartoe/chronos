@@ -1,0 +1,12 @@
+
+- name: Create the directory for the application binaries.
+  file: 
+    path: "{{ optDirectory }}" 
+    state: directory
+    owner: pi
+    group: pi
+
+- name: Download the application WAR file.
+  get_url: 
+    url: https://onebeartoe.ci.cloudbees.com/job/software-development-tools/ws/email/target/email-sendette.jar
+    dest: "{{ optDirectory }}"
