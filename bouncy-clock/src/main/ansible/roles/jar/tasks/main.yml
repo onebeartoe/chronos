@@ -6,7 +6,7 @@
     owner: pi
     group: pi
 
-- name: Download the application WAR file.
+- name: Download the application JAR file.
   get_url: 
-    url: https://onebeartoe.ci.cloudbees.com/job/software-development-tools/ws/email/target/email-sendette.jar
+    url: https://onebeartoe.ci.cloudbees.com/job/chronos/lastSuccessfulBuild/artifact/bouncy-clock/target/bouncy-clock-0.0.1-SNAPSHOT.jar
     dest: "{{ optDirectory }}"

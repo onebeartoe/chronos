@@ -4,5 +4,4 @@
   serial: 1
 #  become: true
   roles:
-    - ../roles/octoprint/email-notifications/notification-software
-
+    - ../roles/jar
