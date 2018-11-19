@@ -15,7 +15,7 @@ pipeline
                 echo 'Updating the JAR...'
 
                 sh '''
-                    cd src/main/ansible/
+                    cd bouncy-clock/src/main/ansible/
                     cp ${ansible_inventory_path} .
                     ansible-playbook playbooks/jar.yml -i ansible-betoland.inventory -l bouncy-clock-pi
                 '''
