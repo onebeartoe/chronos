@@ -27,19 +27,9 @@ public class MainApp extends Application
 //    private static volatile Text circle = new Text("time is");
     private static volatile Label circle = new Label("time is");
 //    public static Circle circle = new Circle(15, Color.GREENYELLOW);
-  
-//    private SimpleStringProperty timeProperty;
     
     public static Pane canvas;
 
-    @Override
-    public void init()
-    {
-//        timeProperty = new SimpleStringProperty("current time");
-        
-//        circle.textProperty()
-//                .bind(timeProperty);
-    }
     
     @Override
     public void start(final Stage primaryStage) 
@@ -112,7 +102,7 @@ public class MainApp extends Application
         timeTimeline.play();
     }
 
-    public static void main(final String[] args) 
+    public static void main(String[] args) 
     {
         launch(args);
     }
