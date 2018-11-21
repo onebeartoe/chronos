@@ -9,14 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.scene.paint.Color;
 
 import org.apache.ecs.html.Select;
 import org.onebeartoe.application.Colors;
 
-import org.onebeartoe.io.TextFileReader;
 import org.onebeartoe.io.TextFileWriter;
 import org.onebeartoe.io.buffered.BufferedTextFileReader;
 import org.onebeartoe.network.http.file.transfer.DynamicFileHttpHandler;

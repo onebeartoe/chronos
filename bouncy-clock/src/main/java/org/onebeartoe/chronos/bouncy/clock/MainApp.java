@@ -1,3 +1,4 @@
+
 package org.onebeartoe.chronos.bouncy.clock;
 
 import java.util.Date;
@@ -16,7 +17,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 /**
- * This bouncy code is inspired by this stackoverlfow answer:
+ * This bouncy code is partially inspired by this stackoverlfow answer:
  * 
  *      https://stackoverflow.com/questions/20022889/how-to-make-the-ball-bounce-off-the-walls-in-javafx
  * 
@@ -24,16 +25,17 @@ import javafx.util.Duration;
  */
 public class MainApp extends Application 
 {
-//    private static volatile Text circle = new Text("time is");
-    private static volatile Label circle = new Label("time is");
-//    public static Circle circle = new Circle(15, Color.GREENYELLOW);
-    
+    private static Label circle;
+   
     public static Pane canvas;
-
     
     @Override
     public void start(final Stage primaryStage) 
     {
+        Date now = new Date();
+        String time = now.toString();
+        circle = new Label(time);
+        
         canvas = new Pane();
         final Scene scene = new Scene(canvas, 800, 600);
 
@@ -41,11 +43,11 @@ public class MainApp extends Application
         primaryStage.setScene(scene);
         primaryStage.show();
         
-//        circle = new Circle(15, Color.BLUE);
         circle.relocate(100, 100);
 
         canvas.getChildren().addAll(circle);
 
+        // Thi Timeline object moves the position of the label every 50 milliseconds.
         final Timeline loop = new Timeline(new KeyFrame(Duration.millis(50), new EventHandler<ActionEvent>() 
         {
 
@@ -55,12 +57,6 @@ public class MainApp extends Application
             @Override
             public void handle(final ActionEvent t) 
             {
-                Date now = new Date();
-                String currentTime = now.toString();
-                
-//                circle.setText(currentTime);
-//                timeProperty.setValue(currentTime);                
-                
                 circle.setLayoutX(circle.getLayoutX() + deltaX);
                 circle.setLayoutY(circle.getLayoutY() + deltaY);
 
@@ -70,16 +66,14 @@ public class MainApp extends Application
                 final boolean atLeftBorder = circle.getLayoutX() <= (bounds.getMinX() + circle.getBoundsInLocal().getMinX() );
                 final boolean atBottomBorder = circle.getLayoutY() >= (bounds.getMaxY() - circle.getBoundsInLocal().getMaxY() );
                 final boolean atTopBorder = circle.getLayoutY() <= (bounds.getMinY() + circle.getBoundsInLocal().getHeight() );
-                
-//                final boolean atRightBorder = circle.getLayoutX() >= (bounds.getMaxX() - circle.getbWidth());
-//                final boolean atLeftBorder = circle.getLayoutX() <= (bounds.getMinX() + circle.getWidth() );
-//                final boolean atBottomBorder = circle.getLayoutY() >= (bounds.getMaxY() - circle.getHeight() );
-//                final boolean atTopBorder = circle.getLayoutY() <= (bounds.getMinY() + circle.getHeight() );
 
-                if (atRightBorder || atLeftBorder) {
+                if (atRightBorder || atLeftBorder) 
+                {
                     deltaX *= -1;
                 }
-                if (atBottomBorder || atTopBorder) {
+                
+                if (atBottomBorder || atTopBorder) 
+                {
                     deltaY *= -1;
                 }
             }
@@ -87,6 +81,7 @@ public class MainApp extends Application
         loop.setCycleCount(Timeline.INDEFINITE);
         loop.play();        
         
+        // this timeline object is responsible for updating the lable text with the current time every second.
         final Timeline timeTimeline = new Timeline( new KeyFrame(Duration.millis(1000), new EventHandler<ActionEvent>() 
         {
             @Override
@@ -95,7 +90,6 @@ public class MainApp extends Application
                 Date now = new Date();
                 String currentTime = now.toString();
                 circle.setText(currentTime);
-//                timeProperty.set(currentTime);
             }
         }));
         timeTimeline.setCycleCount(Timeline.INDEFINITE);
