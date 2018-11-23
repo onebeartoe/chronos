@@ -8,6 +8,19 @@ pipeline
 
     stages 
     {
+        stage('Build the application JAR file.')
+        {
+            steps
+            {
+                echo 'building the JAR...'
+
+                sh '''
+                    cd bouncy-clock/
+                    mvn -DskipTests package
+                '''
+            }
+        }
+
         stage('Update JAR')
         {
             steps
