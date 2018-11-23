@@ -13,6 +13,7 @@ import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -25,47 +26,46 @@ import javafx.util.Duration;
  */
 public class MainApp extends Application 
 {
-    private static Label circle;
-   
-    public static Pane canvas;
-    
+    private static Label label;
+
     @Override
     public void start(final Stage primaryStage) 
     {
         Date now = new Date();
         String time = now.toString();
-        circle = new Label(time);
+        label = new Label(time);
+        label.relocate(100, 100);
+        Font font = new Font(48);
+        label.setFont(font);
         
-        canvas = new Pane();
+        Pane canvas = new Pane();
         final Scene scene = new Scene(canvas, 800, 600);
 
         primaryStage.setTitle("Time App");
         primaryStage.setScene(scene);
+        primaryStage.setFullScreen(true);
         primaryStage.show();
-        
-        circle.relocate(100, 100);
 
-        canvas.getChildren().addAll(circle);
+        canvas.getChildren().addAll(label);
 
         // Thi Timeline object moves the position of the label every 50 milliseconds.
         final Timeline loop = new Timeline(new KeyFrame(Duration.millis(50), new EventHandler<ActionEvent>() 
         {
-
             double deltaX = 6;
             double deltaY = 3;
 
             @Override
             public void handle(final ActionEvent t) 
             {
-                circle.setLayoutX(circle.getLayoutX() + deltaX);
-                circle.setLayoutY(circle.getLayoutY() + deltaY);
+                label.setLayoutX(label.getLayoutX() + deltaX);
+                label.setLayoutY(label.getLayoutY() + deltaY);
 
                 final Bounds bounds = canvas.getBoundsInLocal();
                 
-                final boolean atRightBorder = circle.getLayoutX() >= (bounds.getMaxX() - circle.getBoundsInLocal().getMaxX());
-                final boolean atLeftBorder = circle.getLayoutX() <= (bounds.getMinX() + circle.getBoundsInLocal().getMinX() );
-                final boolean atBottomBorder = circle.getLayoutY() >= (bounds.getMaxY() - circle.getBoundsInLocal().getMaxY() );
-                final boolean atTopBorder = circle.getLayoutY() <= (bounds.getMinY() + circle.getBoundsInLocal().getHeight() );
+                final boolean atRightBorder = label.getLayoutX() >= (bounds.getMaxX() - label.getBoundsInLocal().getMaxX());
+                final boolean atLeftBorder = label.getLayoutX() <= (bounds.getMinX() + label.getBoundsInLocal().getMinX() );
+                final boolean atBottomBorder = label.getLayoutY() >= (bounds.getMaxY() - label.getBoundsInLocal().getMaxY() );
+                final boolean atTopBorder = label.getLayoutY() <= (bounds.getMinY() + label.getBoundsInLocal().getHeight() );
 
                 if (atRightBorder || atLeftBorder) 
                 {
@@ -89,7 +89,7 @@ public class MainApp extends Application
             {
                 Date now = new Date();
                 String currentTime = now.toString();
-                circle.setText(currentTime);
+                label.setText(currentTime);
             }
         }));
         timeTimeline.setCycleCount(Timeline.INDEFINITE);
