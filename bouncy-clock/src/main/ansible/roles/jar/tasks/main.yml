@@ -7,6 +7,6 @@
     
 - name: Copy the application JAR file.
   copy:
-    src: target/bouncy-clock-0.0.1-SNAPSHOT.jar
+    src: ../../../../../target/bouncy-clock-0.0.1-SNAPSHOT.jar
     dest: "{{ optDirectory }}"
     mode: a+rwx
