@@ -18,7 +18,7 @@ public class MainAppSpecification
         implementation = new MainApp();
     }
     
-    @Test
+    @Test(expectedExceptions = ExceptionInInitializerError.class)
     public void start()
     {
         Stage stage = null;
