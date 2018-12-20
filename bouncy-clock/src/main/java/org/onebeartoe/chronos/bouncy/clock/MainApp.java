@@ -26,14 +26,12 @@ import javafx.util.Duration;
  */
 public class MainApp extends Application 
 {
-    private static Label label;
-
     @Override
     public void start(final Stage primaryStage) 
     {
         Date now = new Date();
         String time = now.toString();
-        label = new Label(time);
+        Label label = new Label(time);
         label.relocate(100, 100);
         Font font = new Font(48);
         label.setFont(font);
