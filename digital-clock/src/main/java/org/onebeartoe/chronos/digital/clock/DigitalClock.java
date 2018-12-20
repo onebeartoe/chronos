@@ -62,7 +62,6 @@ import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.effect.Effect;
 import javafx.scene.effect.Glow;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.image.Image;
@@ -72,9 +71,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.CubicCurveTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
-import javafx.scene.shape.Polygon;
 import javafx.scene.transform.Scale;
-import javafx.scene.transform.Shear;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -108,14 +105,11 @@ public class DigitalClock extends Application
     
     private final int httpPort = 8080;
 
-//TODO: make this not static !!!!!!!!!!!!!!!!!!!!!    
-    private static List<Circle> dots;
+    private List<Circle> dots;
     
     @Override
     public void init()
-    {
-        dots = new ArrayList();
-        
+    {        
         initializeParameters();
 
         initializeServer();
@@ -210,8 +204,6 @@ public class DigitalClock extends Application
         root.getChildren().addAll(background, clock);
         primaryStage.setScene(scene);
         primaryStage.show();
-        
-//        startAnimation();
     }
     
     public void startAnimation()
@@ -309,25 +301,30 @@ public class DigitalClock extends Application
             onDotEffect.setInput(new InnerShadow(5,Color.BLACK));
             // create effect for off LEDs
             InnerShadow offEffect = new InnerShadow();
-            // create digits
-            digits = new Digit[7];
-            for (int i = 0; i < 6; i++) 
-            {
-                Digit digit = new Digit(onColor, offColor, onEffect, offEffect);
-                digit.setLayoutX(i * 80 + ((i + 1) % 2) * 20);
-                digits[i] = digit;
-                getChildren().add(digit);
-            }
             
             Circle c1 = new Circle(80 + 54 + 20, 44, 6, onColor);
             Circle c2 = new Circle(80 + 54 + 17, 64, 6, onColor);
             Circle c3 = new Circle((80 * 3) + 54 + 20, 44, 6, onColor);
             Circle c4 = new Circle((80 * 3) + 54 + 17, 64, 6, onColor);
  
+            dots = new ArrayList();
             dots.add(c1);
             dots.add(c2);
             dots.add(c3);
-            dots.add(c4);
+            dots.add(c4);            
+            
+            // create digits
+            digits = new Digit[7];
+            
+            for (int i = 0; i < 6; i++) 
+            {
+                Digit digit = new Digit(onColor, offColor, 
+                                        onEffect, offEffect,
+                                        dots);
+                digit.setLayoutX(i * 80 + ((i + 1) % 2) * 20);
+                digits[i] = digit;
+                getChildren().add(digit);
+            }
             
             // create dots
             Group dotsGroup = new Group(c1,
@@ -377,7 +374,6 @@ public class DigitalClock extends Application
         
         private void refreshClocks() 
         {
-//            calendar = Calendar.getInstance();          
             calendar.setTimeInMillis(System.currentTimeMillis());
             
 //            int hours = calendar.get(Calendar.HOUR_OF_DAY);
@@ -404,11 +400,6 @@ public class DigitalClock extends Application
                     d.setOnColor(newColor);
                 }
             }
-
-//            for(Circle circle : dots)
-//            {                
-//                circle.setFill(newColor);
-//            }
         }
         
         public void shutDown()
@@ -424,75 +415,6 @@ public class DigitalClock extends Application
             if (secondTimeline != null) 
             {
                 secondTimeline.stop();
-            }
-        }
-    }
-
-    /**
-     * Simple 7 segment LED style digit. It supports the numbers 0 through 9.
-     */
-    public static final class Digit extends Parent 
-    {
-        private static final boolean[][] DIGIT_COMBINATIONS = new boolean[][]
-        {
-                new boolean[]{true, false, true, true, true, true, true},
-                new boolean[]{false, false, false, false, true, false, true},
-                new boolean[]{true, true, true, false, true, true, false},
-                new boolean[]{true, true, true, false, true, false, true},
-                new boolean[]{false, true, false, true, true, false, true},
-                new boolean[]{true, true, true, true, false, false, true},
-                new boolean[]{true, true, true, true, false, true, true},
-                new boolean[]{true, false, false, false, true, false, true},
-                new boolean[]{true, true, true, true, true, true, true},
-                new boolean[]{true, true, true, true, true, false, true}
-        };
-        
-        private final Polygon[] polygons = new Polygon[]
-        {
-                new Polygon(2, 0, 52, 0, 42, 10, 12, 10),
-                new Polygon(12, 49, 42, 49, 52, 54, 42, 59, 12f, 59f, 2f, 54f),
-                new Polygon(12, 98, 42, 98, 52, 108, 2, 108),
-                new Polygon(0, 2, 10, 12, 10, 47, 0, 52),
-                new Polygon(44, 12, 54, 2, 54, 52, 44, 47),
-                new Polygon(0, 56, 10, 61, 10, 96, 0, 106),
-                new Polygon(44, 61, 54, 56, 54, 106, 44, 96)
-        };
-        
-        private Color onColor;
-        private final Color offColor;
-        private final Effect onEffect;
-        private final Effect offEffect;
-
-        public Digit(Color onColor, Color offColor, Effect onEffect, Effect offEffect) 
-        {
-            this.onColor = onColor;
-            this.offColor = offColor;
-            this.onEffect = onEffect;
-            this.offEffect = offEffect;
-            
-            getChildren().addAll(polygons);
-            getTransforms().add(new Shear(-0.1,0));
-            showNumber(0);
-        }
-        
-        public void setOnColor(Color color)
-        {
-            onColor = color;
-        }
-
-        public void showNumber(Integer num) 
-        {
-            for(Circle circle : dots)
-            {                
-                circle.setFill(onColor);
-            }            
-            
-            if (num < 0 || num > 9) num = 0; // default to 0 for non-valid numbers
-            
-            for (int i = 0; i < 7; i++) 
-            {
-                polygons[i].setFill(DIGIT_COMBINATIONS[num][i] ? onColor : offColor);
-                polygons[i].setEffect(DIGIT_COMBINATIONS[num][i] ? onEffect : offEffect);
             }
         }
     }
