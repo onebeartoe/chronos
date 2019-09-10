@@ -1,4 +1,6 @@
 
+dist: trusty
+
 language: java
 
 addons:
@@ -6,6 +8,9 @@ addons:
     organization: $SONAR_ORGANIZATION
     token: $SONAR_TOKEN
 
+jdk:
+  - oraclejdk8
+  
 script:
   - Xvfb :5 -screen 0 800x600x24 &
   - export DISPLAY=:5
