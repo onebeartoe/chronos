@@ -16,6 +16,8 @@ import javafx.scene.transform.Shear;
 */
 public class Digit extends Parent 
 {
+    private int currentNumber;
+    
     private List<Circle> dots;
     
         private static final boolean[][] DIGIT_COMBINATIONS = new boolean[][]
@@ -64,19 +66,31 @@ public class Digit extends Parent
         showNumber(0);
     }
         
-        public void setOnColor(Color color)
-        {
-            onColor = color;
-        }
+    public void setOnColor(Color color)
+    {
+        onColor = color;
+    }
 
+    public int currentNumber()
+    {
+        return currentNumber;
+    }
+        
         public void showNumber(Integer num) 
         {
+            currentNumber = num;
+            
             for(Circle circle : dots)
             {                
                 circle.setFill(onColor);
             }            
             
-            if (num < 0 || num > 9) num = 0; // default to 0 for non-valid numbers
+            if (num < 0 || num > 9) 
+            {
+                // default to 0 for non-valid numbers
+                
+                num = 0;
+            } 
             
             for (int i = 0; i < 7; i++) 
             {
@@ -84,4 +98,4 @@ public class Digit extends Parent
                 polygons[i].setEffect(DIGIT_COMBINATIONS[num][i] ? onEffect : offEffect);
             }
         }
-    }
+}
