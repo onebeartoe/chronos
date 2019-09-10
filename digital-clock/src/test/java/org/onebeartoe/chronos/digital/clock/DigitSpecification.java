@@ -36,13 +36,13 @@ public class DigitSpecification
     @Test
     public void showNumber()
     {
-        int currentNumber = 3;
+        int currentNumber = 'w';
         
         implementation.showNumber(currentNumber);
         
         int actual = implementation.currentNumber();
         
-        int expected = 3;
+        int expected = 119;
         
         assertEquals(actual, expected);
     }
